@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "681275256059",
+    "firebase_url": "https://smartcryptology-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "smartcryptology",
+    "storage_bucket": "smartcryptology.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:681275256059:android:4719f2ffdecaa88783945e",
+        "android_client_info": {
+          "package_name": "com.example.smartcryptology"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnwY6f_C1wnxdcDBer3ri6Z_l39mrfk5M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

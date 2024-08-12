@@ -1,0 +1,6 @@
+Flask
+Pillow
+stegano
+uuid
+hashlib
+io
