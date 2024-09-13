@@ -4,16 +4,12 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:smartcryptology/text%20to%20image.dart';
 import 'Appbar.dart';
-import 'Drawer.dart';
-import 'image_to_image.dart';
 class encryption_option extends StatelessWidget {
   const encryption_option({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: GradientAppBar(),
-      drawer: AppDrawer(),
       body: Container(
         width: Get.width,
         height: Get.height,
@@ -67,7 +63,6 @@ class encryption_option extends StatelessWidget {
               ),
 
               onPressed: (){
-                  Get.to(ImageToImage());
                 },
 
             ),

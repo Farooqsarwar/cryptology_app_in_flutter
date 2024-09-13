@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:ui' as ui;
 import 'Appbar.dart';
-import 'Drawer.dart';
 import 'dycryption_option.dart';
 import 'encryption option.dart';
 import 'login.dart';
@@ -19,7 +18,6 @@ class _Screen2State extends State<Screen2> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: GradientAppBar(), //call GradientAppBar here
-      drawer: AppDrawer(), //  call AppDrawer(),
       body: Container(
         width: Get.width,
         height: Get.height,

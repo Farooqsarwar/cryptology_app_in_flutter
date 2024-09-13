@@ -1,24 +1,25 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart'; // Import this to use kIsWeb
 import 'package:get/get.dart';
 import 'package:smartcryptology/splash%20screen.dart';
-import 'controller/user_controller.dart';
 import 'ip_class.dart';
-import 'dart:io' show Platform;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
-    if (Platform.isAndroid) {
+    if (kIsWeb) {
+      // Firebase initialization for Web
       await Firebase.initializeApp(
-          options: const FirebaseOptions(
-            apiKey: 'AIzaSyDnwY6f_C1wnxdcDBer3ri6Z_l39mrfk5M',
-            appId: '1:681275256059:android:4719f2ffdecaa88783945e',
-            messagingSenderId: '681275256059',
-            projectId: 'smartcryptology',
-            storageBucket: 'smartcryptology.appspot.com',
-          )
+        options: const FirebaseOptions(
+          apiKey: 'AIzaSyDnwY6f_C1wnxdcDBer3ri6Z_l39mrfk5M',
+          appId: '1:681275256059:web:4719f2ffdecaa88783945e', // Ensure this appId is correct for web
+          messagingSenderId: '681275256059',
+          projectId: 'smartcryptology',
+          storageBucket: 'smartcryptology.appspot.com',
+        ),
       );
     } else {
+      // Firebase initialization for Android
       await Firebase.initializeApp();
     }
     runApp(MyApp());
@@ -29,7 +30,6 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    Get.put(UserController());
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       home: Splash_screen(),

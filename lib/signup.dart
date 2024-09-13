@@ -13,7 +13,6 @@ class Signup extends StatefulWidget {
   @override
   State<Signup> createState() => _SignupState();
 }
-
 class _SignupState extends State<Signup> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   DatabaseReference userRef = FirebaseDatabase.instance.ref().child("users");
@@ -22,7 +21,6 @@ class _SignupState extends State<Signup> {
   final TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   var isObscure = true.obs;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

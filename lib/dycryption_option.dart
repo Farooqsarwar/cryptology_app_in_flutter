@@ -3,16 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'Appbar.dart';
-import 'Drawer.dart';
 import 'dycrypt_text_to_image.dart';
-import 'image _to_image_dycryption.dart';
 class dycrption_option extends StatelessWidget {
   const dycrption_option({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: GradientAppBar(),
-      drawer: AppDrawer(),
       body: Container(
         width: Get.width,
         height: Get.height,
@@ -65,7 +62,6 @@ class dycrption_option extends StatelessWidget {
                 ),
               ),
               onPressed: (){
-                Get.to(ImageToImageDecryption ());
               },
             ),
             SizedBox(height: 40),

@@ -1,16 +1,12 @@
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'Appbar.dart';
-import 'Drawer.dart';
 import 'ip_class.dart';
 
 class TextToImage extends StatefulWidget {
@@ -120,7 +116,6 @@ class _TextToImageState extends State<TextToImage> {
           );
           return;
         }
-
         setState(() {
           _processedImage = bytes;
         });
@@ -144,7 +139,6 @@ class _TextToImageState extends State<TextToImage> {
       print('Error sending image to server: $e');
     }
   }
-
   Future<void> _saveImage(Uint8List imageBytes) async {
     try {
       final directory = await getTemporaryDirectory();
@@ -167,54 +161,10 @@ class _TextToImageState extends State<TextToImage> {
       );
     }
   }
-
-  Future<String?> uploadImageToFirebase(Uint8List imageBytes) async {
-    try {
-      // Ensure user is authenticated
-      User? user = FirebaseAuth.instance.currentUser;
-      if (user == null) {
-        print('User not authenticated');
-        return null;
-      }
-      // Use user UID to create file path
-      String uid = user.uid;
-      String fileName = 'user_uploads/$uid/Text in Image/${DateTime.now().millisecondsSinceEpoch}.png';
-      FirebaseStorage storage = FirebaseStorage.instance;
-      Reference ref = storage.ref().child(fileName);
-      UploadTask uploadTask = ref.putData(imageBytes);
-      TaskSnapshot snapshot = await uploadTask.whenComplete(() {});
-      String downloadUrl = await snapshot.ref.getDownloadURL();
-      print('Uploaded image URL: $downloadUrl');
-      return downloadUrl;
-    } catch (e) {
-      print('Error uploading image to Firebase: $e');
-      return null;
-    }
-  }
-
-  Future<void> _shareImage(Uint8List imageBytes) async {
-    try {
-      final directory = await getTemporaryDirectory();
-      final imagePath = '${directory.path}/temp_image_to_share.png';
-      final file = File(imagePath);
-      await file.writeAsBytes(imageBytes);
-
-      Share.shareFiles([file.path], text: 'key :$_password');
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to share image due to $e'),
-          duration: Duration(seconds: 2),
-        ),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: GradientAppBar(),
-      drawer: AppDrawer(),
       body: Container(
         width: Get.width,
         height: Get.height,
@@ -367,139 +317,63 @@ class _TextToImageState extends State<TextToImage> {
                 ),
                 SizedBox(height: 30),
                 if(_processedImage!=null)
-                Container(
-                  width: 250,
-                  height: 200,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black, width: 2.0),
-                    borderRadius: BorderRadius.circular(14),
-                    color: Colors.white54,
-                  ),
-                  child: _processedImage == null
-                      ? const Center(
-                    child: Text(
-                      'No Image Selected',
-                      style: TextStyle(color: Colors.black),
+                  Container(
+                    width: 250,
+                    height: 200,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black, width: 2.0),
+                      borderRadius: BorderRadius.circular(14),
+                      color: Colors.white54,
                     ),
-                  )
-                      : Image.memory(
-                    _processedImage!,
-                    fit: BoxFit.cover,
+                    child: _processedImage == null
+                        ? const Center(
+                      child: Text(
+                        'No Image Selected',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    )
+                        : Image.memory(
+                      _processedImage!,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                ),
 
                 if(_processedImage!=null)
 
                   Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextButton(
-                      onPressed: () async {
-                        if (_processedImage != null) {
-                          await _saveImage(_processedImage!);
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('No processed image to save'),
-                              duration: Duration(seconds: 2),
-                            ),
-                          );
-                        }
-                      },
-                      child: Container(
-                        width: 100,
-                        height: 40,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(30)),
-                        child: const Center(
-                          child: Text(
-                            "Save",
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () async {
-                        if (_processedImage != null) {
-                          String? uploadedImageUrl =
-                          await uploadImageToFirebase(_processedImage!);
-                          if (uploadedImageUrl != null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content:
-                                Text('Image uploaded to Firebase successfully'),
-                                duration: Duration(seconds: 2),
-                              ),
-                            );
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton(
+                        onPressed: () async {
+                          if (_processedImage != null) {
+                            await _saveImage(_processedImage!);
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content:
-                                Text('Failed to upload image to Firebase'),
+                                content: Text('No processed image to save'),
                                 duration: Duration(seconds: 2),
                               ),
                             );
                           }
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('No processed image to upload'),
-                              duration: Duration(seconds: 2),
+                        },
+                        child: Container(
+                          width: 100,
+                          height: 40,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(30)),
+                          child: const Center(
+                            child: Text(
+                              "Save",
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold),
                             ),
-                          );
-                        }
-                      },
-                      child: Container(
-                        width: 100,
-                        height: 40,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(30)),
-                        child: const Center(
-                          child: Text(
-                            "Upload",
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold),
                           ),
                         ),
                       ),
-                    ),
-                    TextButton(
-                      onPressed: () async {
-                        if (_processedImage != null) {
-                          await _shareImage(_processedImage!);
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('No processed image to share'),
-                              duration: Duration(seconds: 2),
-                            ),
-                          );
-                        }
-                      },
-                      child: Container(
-                        width: 100,
-                        height: 40,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(30)),
-                        child: const Center(
-                          child: Text(
-                            "Share",
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
               ],
             ),
           ),

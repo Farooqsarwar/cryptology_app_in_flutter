@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'Appbar.dart';
-import 'Drawer.dart';
 import 'ip_class.dart';
 
 class DecryptTextToImage extends StatefulWidget {
@@ -22,7 +21,6 @@ class _DecryptTextToImageState extends State<DecryptTextToImage> {
   String _decryptedMessage = "";
   String _password = "";
   bool _isProcessing = false; // Track processing state
-
   @override
   void initState() {
     super.initState();
@@ -154,7 +152,6 @@ class _DecryptTextToImageState extends State<DecryptTextToImage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: GradientAppBar(),
-      drawer: AppDrawer(),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(

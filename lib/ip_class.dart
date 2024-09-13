@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class IpController extends GetxController {
-  var ipAddress = 'http://10.0.4.52:5050'.obs;
+  var ipAddress = 'https://farooqmandokhail.pythonanywhere.com//'.obs;
   @override
   void onInit() {
     super.onInit();
