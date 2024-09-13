@@ -1,27 +1,22 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'login.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:smartcryptology/views/signin.dart';
 
-class Signup extends StatefulWidget {
-  const Signup({super.key});
-
+class Register_Screen extends StatefulWidget {
   @override
-  State<Signup> createState() => _SignupState();
+  _Register_ScreenState createState() => _Register_ScreenState();
 }
 
-class _SignupState extends State<Signup> {
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
-  DatabaseReference userRef = FirebaseDatabase.instance.ref().child("users");
+class _Register_ScreenState extends State<Register_Screen> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  var isObscure = true.obs;
+  var isobsecure = true.obs;
+
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +39,8 @@ class _SignupState extends State<Signup> {
               children: [
                 CircleAvatar(
                   radius: 100,
-                  backgroundColor: Colors.transparent, // Set a transparent background for the circle
+                  backgroundColor: Colors.transparent,
+                  backgroundImage: AssetImage("assets/p.jpg"),
                   child: Container(
                     child: CircleAvatar(
                       radius: 100,
@@ -66,7 +62,6 @@ class _SignupState extends State<Signup> {
                     ),
                   ),
                 ),
-                // Email field
                 Padding(
                   padding: const EdgeInsets.all(15.0),
                   child: Form(
@@ -83,7 +78,7 @@ class _SignupState extends State<Signup> {
                                 if (value == null || value.isEmpty) {
                                   return 'Please enter name';
                                 }
-                                return null; // Return null if the input is valid
+                                return null;
                               },
                               decoration: InputDecoration(
                                 filled: true,
@@ -109,12 +104,13 @@ class _SignupState extends State<Signup> {
                               controller: emailController,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Please enter an email';
+                                  return 'Please enter some text';
                                 }
-                                if (!value.contains('@') || !value.contains('.')) {
-                                  return 'Invalid email syntax';
+                                if (!value.contains('@')) {
+                                  displaytoastmsg(
+                                      "Invalid syntax Email ", context);
                                 }
-                                return null; // Return null if the input is valid
+                                return null;
                               },
                               decoration: InputDecoration(
                                 filled: true,
@@ -135,33 +131,20 @@ class _SignupState extends State<Signup> {
                         Padding(
                           padding: const EdgeInsets.all(15),
                           child: Obx(
-                                () => Container(
+                            () => Container(
                               width: 350,
                               child: TextFormField(
                                 controller: passwordController,
-                                obscureText: isObscure.value,
+                                obscureText: isobsecure.value,
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Password is required.';
+                                    return 'Enter password';
                                   }
-                                  final hasLetter = RegExp(r'[A-Za-z]').hasMatch(value);
-                                  final hasDigit = RegExp(r'\d').hasMatch(value);
-                                  final hasSymbol = RegExp(r'[@$!%*?&]').hasMatch(value);
-
-                                  if (value.length < 8) {
-                                    return ' must be at least 8 characters .';
+                                  if (value.length != 8) {
+                                    displaytoastmsg(
+                                        "Password must contain length of 8 ",
+                                        context);
                                   }
-
-                                  if (!hasLetter) {
-                                    return ' must include one letter.';
-                                  }
-                                  if (!hasDigit) {
-                                    return 'must include one number.';
-                                  }
-                                  if (!hasSymbol) {
-                                    return 'must include one symbol.';
-                                  }
-
                                   return null;
                                 },
                                 decoration: InputDecoration(
@@ -172,10 +155,10 @@ class _SignupState extends State<Signup> {
                                   iconColor: Colors.black,
                                   suffixIcon: GestureDetector(
                                     onTap: () {
-                                      isObscure.value = !isObscure.value;
+                                      isobsecure.value = !isobsecure.value;
                                     },
                                     child: Icon(
-                                      isObscure.value
+                                      isobsecure.value
                                           ? Icons.visibility_off
                                           : Icons.visibility,
                                     ),
@@ -191,7 +174,6 @@ class _SignupState extends State<Signup> {
                             ),
                           ),
                         ),
-                        // Register button
                         Padding(
                           padding: const EdgeInsets.all(15),
                           child: InkWell(
@@ -223,7 +205,7 @@ class _SignupState extends State<Signup> {
                               ),
                               TextButton(
                                 onPressed: () {
-                                  Get.to(LoginScreen());
+                                  Get.to(SignInView());
                                 },
                                 child: Container(
                                   child: const Text(
@@ -250,38 +232,29 @@ class _SignupState extends State<Signup> {
       ),
     );
   }
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
   void registerNewUser(BuildContext context) async {
     try {
-      // Create a new user in Firebase Authentication
-      UserCredential userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
+      DocumentReference userRef = firestore.collection('users').doc();
+      await userRef.set({
+        'name': nameController.text.trim(),
+        'email': emailController.text.trim(),
+        'password': passwordController.text.trim(),
+      });
 
-      if (userCredential.user != null) {
-        // Create a new user in Firestore with the same UID
-        DocumentReference firestoreUserRef = firestore.collection('users').doc(userCredential.user!.uid);
-        await firestoreUserRef.set({
-          'uid': userCredential.user!.uid.trim(),
-          'name': nameController.text.trim(),
-          'email': emailController.text.trim(),
-          'password': passwordController.text.trim(),
-        });
+      // Print debug information
+      print("User registered successfully");
+      print("User ID: ${userRef.id}");
 
-        print("User registered successfully");
-        print("User ID: ${firestoreUserRef.id}");
-
-        // Navigate to Login Screen
-        Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
-      }
+      // Navigate to Login Screen
+      Get.to(SignInView());
     } catch (error) {
-      print("Registration Error: $error");
-      displayToastMsg("Registration Error: $error", context);
+      print("Error registering user: $error");
+      displaytoastmsg("Registration Error: $error", context);
     }
   }
 
-  void displayToastMsg(String msg, BuildContext context) {
+  void displaytoastmsg(String msg, BuildContext context) {
     Fluttertoast.showToast(msg: msg);
   }
 }
